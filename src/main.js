@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 //import './style.css'
 import App from './App.vue'
 import './index.css'
+import '../node_modules/flowbite-vue/dist/index.css'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 
