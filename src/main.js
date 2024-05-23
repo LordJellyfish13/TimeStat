@@ -2,12 +2,16 @@ import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 //import './style.css'
 import App from './App.vue'
+import PocetnaItem from './components/PocetnaItem.vue'
+import ActivityItem from './components/ActivityItem.vue'
 import RegisterItem from './components/RegisterItem.vue'
 import LoginItem from './components/LoginItem.vue'
+
 import './index.css'
 import '../node_modules/flowbite-vue/dist/index.css'
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyBoJdt5T610N1PrhBed26AOsB9it5fvnbo",
@@ -23,9 +27,11 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         // Define routes here
-        { path: '/', component: App },
+        { path: '/', component: PocetnaItem },
+        { path: '/pocetna', component: PocetnaItem },
+        { path: '/activity', component: ActivityItem },
+        { path: '/login', component: LoginItem },
         { path: '/register', component: RegisterItem },
-        { path: '/login', component: LoginItem }
     ]
 })
 

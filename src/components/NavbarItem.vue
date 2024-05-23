@@ -7,17 +7,11 @@
       </template>
       <template #default="{isShowMenu}">
         <fwb-navbar-collapse :is-show-menu="isShowMenu">
-          <fwb-navbar-link is-active link="#">
-            Home
+          <fwb-navbar-link link="/pocetna">
+            Pocetna
           </fwb-navbar-link>
-          <fwb-navbar-link link="#">
-            Unos aktivnosti
-          </fwb-navbar-link>
-          <fwb-navbar-link link="#">
-            Izracun aktivnosti
-          </fwb-navbar-link>
-          <fwb-navbar-link link="#">
-            Pregled aktivnosti
+          <fwb-navbar-link link="/activity">
+            aktivnosti
           </fwb-navbar-link>
           <fwb-navbar-link link="/login">
             Login
