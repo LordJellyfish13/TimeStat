@@ -13,6 +13,7 @@
     "flowbite": "^2.3.0",
     "flowbite-vue": "^0.1.4",
     "vue": "^3.4.21",
+    "vue-router": "^4.3.2",
     "vuefire": "^3.1.23"
   },
   "devDependencies": {

@@ -1,6 +1,9 @@
 import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 //import './style.css'
 import App from './App.vue'
+import RegisterItem from './components/RegisterItem.vue'
+import LoginItem from './components/LoginItem.vue'
 import './index.css'
 import '../node_modules/flowbite-vue/dist/index.css'
 import { initializeApp } from "firebase/app";
@@ -16,7 +19,18 @@ const firebaseConfig = {
     measurementId: "G-QCN8CYDJ3Q"
 };
 
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        // Define routes here
+        { path: '/', component: App },
+        { path: '/register', component: RegisterItem },
+        { path: '/login', component: LoginItem }
+    ]
+})
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-createApp(App).mount('#app')
+createApp(App).use(router).mount('#app')
+//app.use(router).mount('#app')

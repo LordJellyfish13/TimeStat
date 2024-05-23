@@ -19,4 +19,7 @@ export default {
   <div>
     <h1 class="mx-4 text-2xl text-center text-yellow-100 bg-cyan-600 ">Pozdrav Brate, ovo je home page</h1>
   </div>
+  <router-link to="/login">Login</router-link>
+  <router-link to="/register">Register</router-link> <!--nema razmaka i na stranici ovo je za testirati navigaciju-->
+  <router-view />
 </template>
