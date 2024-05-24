@@ -33,7 +33,7 @@ export default {
       <!-- Your main content goes here -->
       <router-view />
     </div>
-    <FooterItem class="w-full bg-cyan-300 mx-auto mt-4 p-4 md:py-8" />
+    <FooterItem class="w-full bg-indigo-600 mx-auto mt-4 p-4 md:py-8" />
   </div>
 </template>
 
