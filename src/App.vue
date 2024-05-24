@@ -26,6 +26,17 @@ export default {
 </template>
 
 -->
+<template>
+  <div class="flex flex-col min-h-screen">
+    <NavbarItem />
+    <div class="flex-grow">
+      <!-- Your main content goes here -->
+      <router-view />
+    </div>
+    <FooterItem class="w-full bg-cyan-300 mx-auto mt-4 p-4 md:py-8" />
+  </div>
+</template>
+
 <script>
 import { FwbDropdown, FwbListGroup, FwbListGroupItem } from 'flowbite-vue'
 import NavbarItem from './components/NavbarItem.vue'
@@ -38,13 +49,3 @@ export default {
 }
 </script>
 
-<template class="flex flex-col min-h-screen">
-  <NavbarItem />
-  <div>
-    <!-- <h1 class="mx-4 text-2xl text-center text-yellow-100 bg-cyan-600 ">Pozdrav Brate, ovo je zastava</h1> -->
-  </div>
-  <router-view />
-  <div>
-  <FooterItem class="fixed w-full bg-cyan-300 mx-auto mt-4 p-4 md:py-8 bottom-0" />
-  </div>
-</template>
