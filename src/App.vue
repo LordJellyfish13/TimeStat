@@ -41,8 +41,10 @@ export default {
 <template class="flex flex-col min-h-screen">
   <NavbarItem />
   <div>
-    <h1 class="mx-4 text-2xl text-center text-yellow-100 bg-cyan-600 ">Pozdrav Brate, ovo je zastava</h1>
+    <!-- <h1 class="mx-4 text-2xl text-center text-yellow-100 bg-cyan-600 ">Pozdrav Brate, ovo je zastava</h1> -->
   </div>
   <router-view />
-  <FooterItem class="fixed w-full bg-cyan-300 mx-auto p-4 md:py-8 bottom-0" />
+  <div>
+  <FooterItem class="fixed w-full bg-cyan-300 mx-auto mt-4 p-4 md:py-8 bottom-0" />
+  </div>
 </template>
