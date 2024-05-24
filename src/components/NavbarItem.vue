@@ -11,7 +11,7 @@
             Pocetna
           </fwb-navbar-link>
           <fwb-navbar-link link="/activity">
-            aktivnosti
+            Aktivnosti
           </fwb-navbar-link>
           <fwb-navbar-link link="/login">
             Login
