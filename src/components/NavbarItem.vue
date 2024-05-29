@@ -1,7 +1,7 @@
 <template>
     <fwb-navbar>
       <template #logo>
-        <fwb-navbar-logo alt="Flowbite logo" image-url="/stopwatch-icon.webp" link="#">
+        <fwb-navbar-logo alt="Flowbite logo" image-url="/stopwatch-icon.webp" link="/">
           TimeStat
         </fwb-navbar-logo>
       </template>
