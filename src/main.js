@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { VueFire, VueFireAuth } from 'vuefire'
 import { createRouter, createWebHistory } from 'vue-router'
 //import './style.css'
 import App from './App.vue'
@@ -35,8 +36,48 @@ const router = createRouter({
     ]
 })
 
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+
+export const firebaseApp = initializeApp(firebaseConfig);
+const analytics = getAnalytics(firebaseApp);
+
+/*
+app.use(VueFire, {
+    firebaseApp,
+    modules: [
+        VueFireAuth(),
+    ],
+
+})
+*/
 
 createApp(App).use(router).mount('#app')
 //app.use(router).mount('#app')
+
+/*
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/messaging';
+import 'firebase/compat/firestore';
+
+App.initializeApp()
+
+const auth = firebase.auth();
+const messaging = firebase.messaging();
+const firestore = firebase.firestore();
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    console.log("User is signed in");
+    console.log(user)
+  } else {
+    // User is signed out
+    console.log("User is signed out");
+  }
+})
+
+
+*/
