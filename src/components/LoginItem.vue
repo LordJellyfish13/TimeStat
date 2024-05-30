@@ -19,16 +19,16 @@
           Sign in to your account
         </h2>
       </div>
-      <form class="mt-8 space-y-6" action="#" method="POST">
+      <form class="mt-8 space-y-6" @submit.prevent="login">
         <input type="hidden" name="remember" value="true">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
             <label for="email-address" class="sr-only">Email address</label>
-            <input id="email-address" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address">
+            <input id="email-address" v-model="email" name="email" type="email" autocomplete="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Email address">
           </div>
           <div>
             <label for="password" class="sr-only">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
+            <input id="password" name="password" v-model="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Password">
           </div>
         </div>
 
@@ -55,8 +55,8 @@
       </form>
       <p class="mt-2 text-center text-sm text-gray-600">
         Actually need to register? 
-        <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
-          Sign in
+        <a href="/register" class="font-medium text-indigo-600 hover:text-indigo-500">
+          Sign up
         </a>
       </p>
     </div>
@@ -64,21 +64,35 @@
 </template>
 
 <script>
+import { ref } from 'vue';
+import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { firebaseApp } from '../firebase/init';
+
 export default {
   name: 'Login',
-  data() {
-    return {
-      email: '',
-      password: '',
+  setup() {
+    const auth = getAuth(firebaseApp);
+    const email = ref('');
+    const password = ref('');
+    const error = ref(null);
+
+    const login = async () => {
+      try {
+        await signInWithEmailAndPassword(auth, email.value, password.value);
+        alert('Logged in successfully');
+      } catch (error) {
+        error.value = error.message;
+        
+        console.log('error.message', error.message);
+      }
     };
-  },
-  methods: {
-    async login() {
-      // Here you can add your Firebase authentication logic
-    },
+
+    return {
+      email,
+      password,
+      error,
+      login,
+    };
   },
 };
 </script>
-
-<style scoped>
-</style>
