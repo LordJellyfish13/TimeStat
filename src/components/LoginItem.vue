@@ -81,9 +81,19 @@ export default {
         await signInWithEmailAndPassword(auth, email.value, password.value);
         alert('Logged in successfully');
       } catch (error) {
+        alert('Wrong email or password');
         error.value = error.message;
         
         console.log('error.message', error.message);
+      }
+    };
+
+    const resetPassword = async () => {
+      try {
+        await sendPasswordResetEmail(auth, email.value);
+        alert('Password reset email sent');
+      } catch (error) {
+        error.value = error.message;
       }
     };
 
