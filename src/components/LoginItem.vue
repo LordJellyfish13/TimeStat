@@ -1,16 +1,3 @@
-<!--
-<template>
-    <div>
-        <h1>Pozdrav, sad si na stranici za login :)</h1>
-      <form @submit.prevent="login">
-        <input v-model="email" type="email" placeholder="Email" required />
-        <input v-model="password" type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-    </div>
-</template>
--->
-
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
@@ -41,7 +28,7 @@
           </div>
 
           <div class="text-sm">
-            <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+            <a href="#" @click.prevent="resetPassword" class="font-medium text-indigo-600 hover:text-indigo-500">
               Forgot your password?
             </a>
           </div>
@@ -65,7 +52,7 @@
 
 <script>
 import { ref } from 'vue';
-import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from '@firebase/auth';
 import { firebaseApp } from '../firebase/init';
 
 export default {
@@ -102,6 +89,7 @@ export default {
       password,
       error,
       login,
+      resetPassword,
     };
   },
 };

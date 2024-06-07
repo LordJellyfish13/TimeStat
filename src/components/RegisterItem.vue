@@ -67,37 +67,33 @@
 </template>
 
 <script>
-// Your Vue component
 import { ref } from 'vue';
-import { firebaseApp } from '../firebase/init'; // Import your firebaseApp setup
+import { firebaseApp } from '../firebase/init';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'vue-router'; // Import Vue Router
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'RegisterItem',
   
   setup() {   
-    const auth = getAuth(firebaseApp); // Initialize Firebase auth
+    const auth = getAuth(firebaseApp); 
     const email = ref('');
     const password = ref('');
     const confirmPassword = ref('');
-    const router = useRouter(); // Initialize Vue Router
+    const router = useRouter(); 
 
     const register = async () => {
       try {
-        // Check if passwords match
         if (password.value !== confirmPassword.value) {
           console.error('Passwords do not match');
           return;
         }
 
-        // Register user with Firebase
         await createUserWithEmailAndPassword(auth, email.value, password.value);
-        //hrtawait firebaseApp.auth().createUserWithEmailAndPassword(email, password);
-
-        // Optionally, you can redirect the user to the login page after successful registration
+        alert('User registered successfully');
         router.push('/login');
       } catch (error) {
+        alert('Error registering user');
         console.error('Error registering user:', error.message);
       }
     };
