@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import PocetnaItem from './components/PocetnaItem.vue'
 import ActivityItem from './components/ActivityItem.vue'
+import DashboardItem from './components/DashboardItem.vue'
 import RegisterItem from './components/RegisterItem.vue'
 import LoginItem from './components/LoginItem.vue'
 
@@ -31,6 +32,7 @@ const router = createRouter({
         { path: '/', component: PocetnaItem },
         { path: '/pocetna', component: PocetnaItem },
         { path: '/activity', component: ActivityItem },
+        { path: '/dashboard', component: DashboardItem},
         { path: '/login', component: LoginItem },
         { path: '/register', component: RegisterItem },
     ]
