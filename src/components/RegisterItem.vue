@@ -68,7 +68,7 @@
 
 <script>
 import { ref } from 'vue';
-import { firebaseApp } from '../firebase/init';
+import { firebaseApp } from '../firebase/init.js';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'vue-router';
 
