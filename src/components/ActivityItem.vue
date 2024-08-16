@@ -39,27 +39,53 @@
     </div>
   </template>
   
-  <script setup>
-  import { ref } from 'vue'
   
-  const activities = ref([])
-  const newActivity = ref({
-    name: '',
-    description: '',
-    elapsedTime: 0,
+<script setup>
+import { ref } from 'vue'
+import { db } from '../firebase/init.js'
+import { collection, getDocs, addDoc } from 'firebase/firestore'
+
+const fetchActivities = async () => {
+  const querySnapshot = await getDocs(collection(db, 'activities'))
+  activities.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+}
+
+fetchActivities()
+
+const activities = ref([])
+const newActivity = ref({
+  name: '',
+  description: '',
+  elapsedTime: 0,
+  timer: null
+})
+
+const addActivity = async () => {
+  // Create a new activity object using the values from newActivity
+  const activity = {
+    name: newActivity.value.name,
+    description: newActivity.value.description,
+    elapsedTime: newActivity.value.elapsedTime,
     timer: null
-  })
-  
-  const addActivity = () => {
-    // Add the new activity to the activities array
-    activities.value.push({ ...newActivity.value, id: Date.now() })
-  
-    // Start the timer for the new activity
-    startTimer(newActivity.value)
-  
-    // Reset the form
-    newActivity.value = { name: '', description: '', elapsedTime: 0, timer: null }
   }
+
+  // Add the new activity to the activities array
+  activities.value.push({ ...activity, id: Date.now() })
+
+  // Start the timer for the new activity
+  startTimer(activity)
+
+  // Reset the form
+  newActivity.value = { name: '', description: '', elapsedTime: 0, timer: null }
+
+  // Add the new activity to the Firestore database
+  try { 
+    await addDoc(collection(db, 'activities'), activity)
+  } catch (error) {
+    console.error('Error adding activity to Firestore: ', error)
+  }
+}
+
   
   const startTimer = (activity) => {
     activity.timer = setInterval(() => {

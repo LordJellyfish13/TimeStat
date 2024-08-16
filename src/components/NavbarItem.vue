@@ -13,6 +13,9 @@
           <fwb-navbar-link link="/activity">
             Aktivnosti
           </fwb-navbar-link>
+          <fwb-navbar-link link="/activitylist">
+            Lista
+          </fwb-navbar-link>
           <fwb-navbar-link link="/dashboard">
             Dashboard
           </fwb-navbar-link>
