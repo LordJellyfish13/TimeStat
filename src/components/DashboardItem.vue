@@ -1,164 +1,157 @@
-<!--
 <template>
-    <div class="dashboard">
-      <h1>Dashboard</h1>
-      <p v-if="!state.isLoggedIn">You are in guest mode. Activities will only be saved locally.</p>
-      <div v-if="loading">Loading...</div>
-      <div v-else>
-        <canvas id="activityChart"></canvas>
-        <ul>
-          <li v-for="activity in activities" :key="activity.id">
-            {{ activity.name }} - {{ formatTime(activity.elapsedTime) }}
-          </li>
-        </ul>
+  <div class="container mx-auto px-4 py-8 flex justify-center items-start min-h-screen">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+      <!-- Dashboard Section -->
+      <div class="col-span-1 md:col-span-2">
+        <h2 class="text-center text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200">Dashboard</h2>
+        <div v-for="activity in activities" :key="activity.id" class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700">
+          <h5 class="mb-3 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+            {{ activity.name }}
+          </h5>
+          <p class="text-gray-700 dark:text-gray-400 mb-4" v-if="activity.description">
+            {{ activity.description }}
+          </p>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
+        </div>
       </div>
-      <button @click="addNewActivity">Add Activity</button>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  //import { state } from '@/state';
-  //import { db } from '@/firebase';
-  import { collection, getDocs, query, where, addDoc } from 'firebase/firestore';
-  import { Chart, registerables } from 'chart.js';
-  
-  Chart.register(...registerables);
-  
-  const activities = ref([]);
-  const loading = ref(true);
-  let activityChart;
-  
-  const fetchActivitiesFromFirebase = async () => {
-    loading.value = true;
-    const q = query(collection(db, 'activities'), where('userId', '==', state.user.uid));
-    const querySnapshot = await getDocs(q);
-    activities.value = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-    loading.value = false;
-    drawChart();
-  };
-  
-  const fetchActivitiesFromLocalStorage = () => {
-    loading.value = true;
-    const localActivities = localStorage.getItem('activities');
-    activities.value = localActivities ? JSON.parse(localActivities) : [];
-    loading.value = false;
-    drawChart();
-  };
-  
-  const drawChart = () => {
-    const ctx = document.getElementById('activityChart').getContext('2d');
-    if (activityChart) {
-      activityChart.destroy();
-    }
-    activityChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: activities.value.map(activity => activity.name),
-        datasets: [{
-          label: 'Elapsed Time (seconds)',
-          data: activities.value.map(activity => activity.elapsedTime),
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  };
-  
-  const formatTime = (seconds) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-    return `${hours}h ${minutes}m ${remainingSeconds}s`;
-  };
-  
-  const addNewActivity = async () => {
-    const newActivity = {
-      name: 'New Activity',
-      description: 'Description here...',
-      elapsedTime: 0,
-      userId: state.isLoggedIn ? state.user.uid : 'guest',
-      timestamp: new Date()
-    };
-    if (state.isLoggedIn) {
-      await addDoc(collection(db, 'activities'), newActivity);
-      fetchActivitiesFromFirebase();
-    } else {
-      activities.value.push(newActivity);
-      localStorage.setItem('activities', JSON.stringify(activities.value));
-      drawChart();
-    }
-  };
-  
-  onMounted(() => {
-    if (state.isLoggedIn) {
-      fetchActivitiesFromFirebase();
-    } else {
-      fetchActivitiesFromLocalStorage();
-    }
-  });
-  </script>
-  
-  <style scoped>
-  .dashboard {
-    padding: 2rem;
-  }
-  </style>
-
--->
-  
-<template>
-  <div v-if="item">
-    <h2>{{ item.name }}</h2>
-    <p>{{ item.description }}</p>
-  </div>
-  <div v-else>
-    <p>Tekts...</p>
   </div>
 </template>
 
-<script>
-import { db } from '../firebase/init.js'; // Ensure this path is correct
-import { doc, getDoc } from 'firebase/firestore';
+<script setup>
+import { ref, onMounted } from 'vue'
+import { db } from '../firebase/init.js'
+import { collection, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore'
 
-export default {
-  props: {
-    itemId: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      item: null
-    };
-  },
-  async created() {
-    try {
-      const docRef = doc(db, 'dashboardItems', this.itemId);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        this.item = docSnap.data();
-      } else {
-        console.log('No such document!');
-      }
-    } catch (error) {
-      console.error('Error fetching document:', error);
-    }
+const activities = ref([])
+const newActivity = ref({
+  name: '',
+  description: '',
+  elapsedTime: 0,
+  timer: null,
+  progress: 0
+})
+
+const fetchActivities = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, 'activities'))
+    activities.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+    console.log('Fetched activities:', activities.value)
+  } catch (error) {
+    console.error('Error fetching activities:', error)
   }
-};
+}
+
+onMounted(fetchActivities)
+
+const addActivity = async () => {
+  const activity = {
+    name: newActivity.value.name,
+    description: newActivity.value.description,
+    elapsedTime: 0,
+    timer: null,
+    progress: newActivity.value.progress
+  }
+
+  activities.value.push({ ...activity, id: Date.now() })
+  startTimer(activity)
+
+  newActivity.value = { name: '', description: '', elapsedTime: 0, timer: null, progress: 0 }
+
+  try { 
+    const docRef = await addDoc(collection(db, 'activities'), activity)
+    activity.id = docRef.id
+  } catch (error) {
+    console.error('Error adding activity to Firestore: ', error)
+  }
+}
+
+const updateActivity = async (activity) => {
+  try {
+    await updateDoc(doc(db, 'activities', activity.id), {
+      elapsedTime: activity.elapsedTime,
+      progress: activity.progress
+    })
+  } catch (error) {
+    console.error('Error updating activity in Firestore: ', error)
+  }
+}
+
+const toggleTimer = (activity) => {
+  if (activity.timer) {
+    pauseTimer(activity)
+  } else {
+    resumeTimer(activity)
+  }
+}
+
+const startTimer = (activity) => {
+  activity.timer = setInterval(() => {
+    activity.elapsedTime++
+    activity.progress = activity.elapsedTime
+    updateActivity(activity)
+  }, 1000)
+}
+
+const pauseTimer = (activity) => {
+  clearInterval(activity.timer)
+  activity.timer = null
+  updateActivity(activity)
+}
+
+const resumeTimer = (activity) => {
+  startTimer(activity)
+}
+
+const stopTimer = (activity) => {
+  clearInterval(activity.timer)
+  activity.elapsedTime = 0
+  activity.timer = null
+  activity.progress = 0
+  updateActivity(activity)
+}
+
+const formatTime = (seconds) => {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainingSeconds = seconds % 60
+  return `${hours}h ${minutes}m ${remainingSeconds}s`
+}
 </script>
 
 <style scoped>
-.dashboard {
-    padding: 2rem;
-  }
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+}
+
+.card {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-0.25rem);
+}
+
+.card h5 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.card p {
+  margin-bottom: 0.75rem;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
 </style>
