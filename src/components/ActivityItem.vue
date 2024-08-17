@@ -12,9 +12,9 @@
             {{ activity.description }}
           </p>
           <p>Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
-          <button @click="toggleTimer(activity)" class="px-4 py-2 rounded text-white" :class="activity.timer ? 'bg-yellow-400' : 'bg-green-500'">
+            <button @click="toggleTimer(activity)" class="px-4 py-2 rounded text-white" :class="activity.timer ? 'bg-yellow-400' : 'bg-green-500'">
             {{ activity.timer ? 'Pause' : 'Resume' }}
-          </button>
+            </button>
           <button @click="stopTimer(activity)" class="px-4 py-2 rounded text-white bg-red-500">Stop</button>
         </div>
       </div>
@@ -56,7 +56,10 @@ const newActivity = ref({
 
 const fetchActivities = async () => {
   const querySnapshot = await getDocs(collection(db, 'activities'))
-  activities.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  activities.value = querySnapshot.docs.map(doc => {
+    const data = doc.data()
+    return { id: doc.id, ...data, timer: null } // Ensure timer is null on reload
+  })
 }
 
 onMounted(fetchActivities)
@@ -104,6 +107,7 @@ const toggleTimer = (activity) => {
 }
 
 const startTimer = (activity) => {
+  activity.timer = null // Set timer to null before starting
   activity.timer = setInterval(() => {
     activity.elapsedTime++
     activity.progress = activity.elapsedTime
@@ -136,7 +140,6 @@ const formatTime = (seconds) => {
   return `${hours}h ${minutes}m ${remainingSeconds}s`
 }
 </script>
-
 
 <style scoped>
 .card {
