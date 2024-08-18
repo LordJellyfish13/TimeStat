@@ -41,6 +41,7 @@ export default {
 import { FwbDropdown, FwbListGroup, FwbListGroupItem } from 'flowbite-vue'
 import NavbarItem from './components/NavbarItem.vue'
 import FooterItem from './components/FooterItem.vue'
+import BarChart from './components/BarChart.vue';
 export default {
   components: { 
     NavbarItem,

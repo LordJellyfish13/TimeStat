@@ -4,6 +4,7 @@
       <!-- Dashboard Section -->
       <div class="col-span-1 md:col-span-2">
         <h2 class="text-center text-3xl font-bold mb-6 text-gray-800 dark:text-gray-200">Dashboard</h2>
+        <BarChart />
         <div v-for="activity in activities" :key="activity.id" class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700">
           <h5 class="mb-3 text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
             {{ activity.name }}
@@ -22,6 +23,7 @@
 import { ref, onMounted } from 'vue'
 import { db } from '../firebase/init.js'
 import { collection, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore'
+import BarChart from './BarChart.vue';
 
 const activities = ref([])
 const newActivity = ref({
