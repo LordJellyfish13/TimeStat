@@ -11,11 +11,6 @@
           Dashboard
         </h2>
         <div
-          class="card bg-white shadow-lg rounded-lg p-6 mb-20 dark:bg-gray-800 dark:shadow-gray-700 mt-10"
-        >
-          <BarChart />
-        </div>
-        <div
           v-for="activity in activities"
           :key="activity.id"
           class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700"
@@ -193,3 +188,59 @@ const formatTime = (seconds) => {
   margin-bottom: 0;
 }
 </style>
+
+................................................................
+
+<template>
+  <Pie :data="chartData" :options="chartOptions" />
+</template>
+
+<script>
+import { Pie } from "vue-chartjs";
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  PieController,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PieController
+);
+
+export default {
+  name: "PieChart",
+  components: { Pie },
+  data() {
+    return {
+      chartData: {
+        labels: ["January", "February", "March"],
+        datasets: [
+          {
+            label: "Data One",
+            backgroundColor: ["red", "green", "yellow"],
+            data: [40, 20, 12],
+          },
+        ],
+      },
+      chartOptions: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    };
+  },
+};
+</script>
