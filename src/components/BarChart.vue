@@ -36,6 +36,18 @@ ChartJS.register(
 const chartData = ref([]);
 const loading = ref(true);
 
+// Helper function to format time in a human-readable format
+const formatTime = (seconds) => {
+  if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    return `${hours}h ${minutes}m`;
+  }
+};
+
 const fetchActivities = async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "activities"));
@@ -43,10 +55,21 @@ const fetchActivities = async () => {
       const data = doc.data();
       return { id: doc.id, ...data };
     });
-    chartData.value = activities.map((activity) => ({
-      name: activity.name,
-      progress: parseFloat((activity.progress / 3600).toFixed(2)), // Convert to hours
-    }));
+
+    chartData.value = activities.map((activity) => {
+      const progressInSeconds = activity.progress;
+      const progressDisplay = formatTime(progressInSeconds);
+      let progressValue;
+
+      // Convert the progress to minutes for the chart, as that gives us a better scale
+      progressValue = progressInSeconds / 3600; // Convert to minutes
+
+      return {
+        name: activity.name,
+        progress: progressValue,
+        progressDisplay: progressDisplay,
+      };
+    });
   } catch (error) {
     console.error("Error fetching activities:", error);
   } finally {
@@ -67,7 +90,7 @@ const computedChartData = computed(() => {
     labels: chartData.value.map((item) => item.name),
     datasets: [
       {
-        label: "Progress (h)",
+        label: "Progress",
         data: chartData.value.map((item) => item.progress),
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         borderColor: "rgba(75, 192, 192, 1)",
@@ -89,7 +112,9 @@ const chartOptions = {
     tooltip: {
       callbacks: {
         label: function (context) {
-          return `${context.label}: ${context.raw} h`;
+          const dataIndex = context.dataIndex;
+          const dataPoint = chartData.value[dataIndex];
+          return `${dataPoint.name}: ${dataPoint.progressDisplay}`;
         },
       },
     },
@@ -113,7 +138,6 @@ const chartOptions = {
 </script>
 
 <style scoped>
-/* Add any styling here to fit the theme */
 .bar-chart-container {
   background-color: #ffffff;
   border-radius: 0.5rem;
@@ -121,3 +145,6 @@ const chartOptions = {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>
+
+/* trenutno se vrijeme popravilo za sate no treba jos prilagoditi vrijeme ako je
+u minutama i na kraju grafa napisati ispravno vrijednosti */
