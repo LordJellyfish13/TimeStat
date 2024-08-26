@@ -13,7 +13,7 @@
     </div>
 
     <div
-      v-for="activity in activities"
+      v-for="activity in sortedActivities"
       :key="activity.id"
       class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700"
     >
@@ -137,7 +137,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { db } from "../firebase/init.js";
 import {
   collection,
@@ -154,6 +154,7 @@ const newActivity = ref({
   elapsedTime: 0,
   timer: null,
   progress: 0,
+  lastUsed: Date.now(), // Add initial lastUsed time
 });
 
 const isModalOpen = ref(false);
@@ -183,9 +184,12 @@ const addActivity = async () => {
     elapsedTime: 0,
     timer: null,
     progress: 0, // Initialize progress to 0
+    lastUsed: Date.now(), // Set lastUsed time when activity is created
   };
 
-  activities.value.push(activity); // Directly push the new activity
+  // Directly push the new activity ensuring reactivity
+  activities.value.push(activity);
+
   startTimer(activity); // Start the timer immediately upon adding
 
   newActivity.value = {
@@ -194,6 +198,7 @@ const addActivity = async () => {
     elapsedTime: 0,
     timer: null,
     progress: 0,
+    lastUsed: Date.now(),
   };
 
   try {
@@ -214,6 +219,7 @@ const updateActivity = async (activity) => {
     await updateDoc(doc(db, "activities", activity.id), {
       elapsedTime: activity.elapsedTime,
       progress: activity.progress,
+      lastUsed: activity.lastUsed, // Update lastUsed time in Firestore
     });
   } catch (error) {
     console.error("Error updating activity in Firestore: ", error);
@@ -231,6 +237,7 @@ const toggleTimer = (activity) => {
 const startTimer = (activity) => {
   if (activity.timer) return; // Prevent multiple timers
 
+  activity.lastUsed = Date.now(); // Update lastUsed when timer starts
   activity.timer = setInterval(() => {
     activity.elapsedTime++;
     activity.progress = activity.elapsedTime;
@@ -243,6 +250,7 @@ const pauseTimer = (activity) => {
 
   clearInterval(activity.timer);
   activity.timer = null;
+  activity.lastUsed = Date.now(); // Update lastUsed when timer is paused
   updateActivity(activity); // Update activity in Firestore
 };
 
@@ -253,6 +261,7 @@ const stopTimer = (activity) => {
   activity.elapsedTime = 0;
   activity.timer = null;
   activity.progress = 0;
+  activity.lastUsed = Date.now(); // Update lastUsed when timer is stopped
   updateActivity(activity); // Update activity in Firestore
 };
 
@@ -262,19 +271,28 @@ const formatTime = (seconds) => {
   const remainingSeconds = seconds % 60;
   return `${hours}h ${minutes}m ${remainingSeconds}s`;
 };
+
+// Sort activities by lastUsed timestamp, with active timers at the top
+const sortedActivities = computed(() => {
+  return [...activities.value].sort((a, b) => {
+    if (a.timer && !b.timer) return -1;
+    if (!a.timer && b.timer) return 1;
+    return b.lastUsed - a.lastUsed; // Sort by lastUsed timestamp in descending order
+  });
+});
 </script>
 
 <style scoped>
-/* Additional styling for modern look */
+/* Add any styling here to fit the theme */
 .card {
   background-color: #ffffff;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .container {
-  max-width: 1000px; /* Optional, adjusts container width */
+  max-width: 800px; /* Optional, adjusts container width */
   margin-top: 2rem;
 }
 
