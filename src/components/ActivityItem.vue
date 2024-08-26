@@ -1,37 +1,45 @@
 <template>
-  <div class="container mx-auto px-4">
+  <div class="container mx-auto px-4 relative">
     <!-- Activities Section -->
-    <div class="mb-8">
+    <div class="mb-8 flex justify-between items-center">
       <h2 class="text-2xl font-bold mb-4">Activities</h2>
-      <div
-        v-for="activity in activities"
-        :key="activity.id"
-        class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700"
+      <!-- Plus Button -->
+      <button
+        @click="openModal"
+        class="bg-green-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:bg-green-600 transition duration-300"
       >
-        <h5
-          class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+        <span class="text-2xl">+</span>
+      </button>
+    </div>
+
+    <div
+      v-for="activity in activities"
+      :key="activity.id"
+      class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700"
+    >
+      <h5
+        class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+      >
+        {{ activity.name }}
+      </h5>
+      <p class="font-normal text-gray-700 dark:text-gray-400">
+        {{ activity.description }}
+      </p>
+      <p>Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
+      <div class="flex gap-2 mt-4">
+        <button
+          @click="toggleTimer(activity)"
+          class="px-4 py-2 rounded text-white"
+          :class="activity.timer ? 'bg-yellow-400' : 'bg-green-500'"
         >
-          {{ activity.name }}
-        </h5>
-        <p class="font-normal text-gray-700 dark:text-gray-400">
-          {{ activity.description }}
-        </p>
-        <p>Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
-        <div class="flex gap-2 mt-4">
-          <button
-            @click="toggleTimer(activity)"
-            class="px-4 py-2 rounded text-white"
-            :class="activity.timer ? 'bg-yellow-400' : 'bg-green-500'"
-          >
-            {{ activity.timer ? "Pause" : "Resume" }}
-          </button>
-          <button
-            @click="stopTimer(activity)"
-            class="px-4 py-2 rounded text-white bg-red-500"
-          >
-            Stop
-          </button>
-        </div>
+          {{ activity.timer ? "Pause" : "Resume" }}
+        </button>
+        <button
+          @click="stopTimer(activity)"
+          class="px-4 py-2 rounded text-white bg-red-500"
+        >
+          Stop
+        </button>
       </div>
     </div>
 
@@ -40,7 +48,7 @@
 
     <!-- Dashboard Section -->
     <div>
-      <h2 class="text-2xl font-bold mb-4">New Activity</h2>
+      <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
       <div
         class="card bg-white shadow-lg rounded-lg p-6 dark:bg-gray-800 dark:shadow-gray-700"
       >
@@ -76,6 +84,55 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal -->
+    <div
+      v-if="isModalOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50"
+    >
+      <div class="bg-white rounded-lg p-6 shadow-lg w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4">Add New Activity</h2>
+        <form @submit.prevent="addActivityAndCloseModal">
+          <div class="mb-4">
+            <label for="modal-name" class="block mb-2 font-semibold"
+              >Activity Name</label
+            >
+            <input
+              type="text"
+              id="modal-name"
+              v-model="newActivity.name"
+              class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label for="modal-description" class="block mb-2 font-semibold"
+              >Description (Optional)</label
+            >
+            <textarea
+              id="modal-description"
+              v-model="newActivity.description"
+              class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400"
+            ></textarea>
+          </div>
+          <div class="flex justify-end gap-4">
+            <button
+              type="button"
+              @click="closeModal"
+              class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg shadow hover:bg-gray-400 transition duration-300"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+            >
+              Add Activity
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -98,6 +155,16 @@ const newActivity = ref({
   timer: null,
   progress: 0,
 });
+
+const isModalOpen = ref(false);
+
+const openModal = () => {
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
+};
 
 const fetchActivities = async () => {
   const querySnapshot = await getDocs(collection(db, "activities"));
@@ -135,6 +202,11 @@ const addActivity = async () => {
   } catch (error) {
     console.error("Error adding activity to Firestore: ", error);
   }
+};
+
+const addActivityAndCloseModal = async () => {
+  await addActivity();
+  closeModal();
 };
 
 const updateActivity = async (activity) => {
@@ -202,7 +274,17 @@ const formatTime = (seconds) => {
 }
 
 .container {
-  max-width: 800px; /* Optional, adjusts container width */
+  max-width: 1000px; /* Optional, adjusts container width */
   margin-top: 2rem;
+}
+
+/* Plus Button */
+button {
+  position: relative;
+}
+
+/* Modal Background */
+.fixed {
+  z-index: 50;
 }
 </style>
