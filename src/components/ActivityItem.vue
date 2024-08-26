@@ -1,23 +1,23 @@
 <template>
   <div class="container mx-auto px-4">
-    <div class="grid grid-cols-2 gap-4">
-      <!-- Dashboard Section -->
-      <div class="col-span-1">
-        <h2 class="text-2xl font-bold mb-4">Dashboard</h2>
-        <div
-          v-for="activity in activities"
-          :key="activity.id"
-          class="card mb-4 overflow-auto break-words overflow-ellipsis"
+    <!-- Activities Section -->
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Activities</h2>
+      <div
+        v-for="activity in activities"
+        :key="activity.id"
+        class="card bg-white shadow-lg rounded-lg p-6 mb-6 dark:bg-gray-800 dark:shadow-gray-700"
+      >
+        <h5
+          class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
         >
-          <h5
-            class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-          >
-            {{ activity.name }}
-          </h5>
-          <p class="font-normal text-gray-700 dark:text-gray-400">
-            {{ activity.description }}
-          </p>
-          <p>Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
+          {{ activity.name }}
+        </h5>
+        <p class="font-normal text-gray-700 dark:text-gray-400">
+          {{ activity.description }}
+        </p>
+        <p>Elapsed time: {{ formatTime(activity.elapsedTime) }}</p>
+        <div class="flex gap-2 mt-4">
           <button
             @click="toggleTimer(activity)"
             class="px-4 py-2 rounded text-white"
@@ -33,40 +33,47 @@
           </button>
         </div>
       </div>
+    </div>
 
-      <!-- Add Activity Section -->
-      <div class="col-span-1">
-        <h2 class="text-2xl font-bold mb-4">Add Activity</h2>
-        <div class="card">
-          <form @submit.prevent="addActivity">
-            <div class="mb-4">
-              <label for="name" class="block mb-2">Activity Name</label>
-              <input
-                type="text"
-                id="name"
-                v-model="newActivity.name"
-                class="w-full px-3 py-2 border rounded"
-                required
-              />
-            </div>
-            <div class="mb-4">
-              <label for="description" class="block mb-2"
-                >Description (Optional)</label
-              >
-              <textarea
-                id="description"
-                v-model="newActivity.description"
-                class="w-full px-3 py-2 border rounded"
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              class="px-4 py-2 bg-green-500 text-white rounded"
+    <!-- Horizontal Divider -->
+    <div class="w-full border-t border-gray-300 mb-8"></div>
+
+    <!-- Dashboard Section -->
+    <div>
+      <h2 class="text-2xl font-bold mb-4">New Activity</h2>
+      <div
+        class="card bg-white shadow-lg rounded-lg p-6 dark:bg-gray-800 dark:shadow-gray-700"
+      >
+        <form @submit.prevent="addActivity">
+          <div class="mb-4">
+            <label for="name" class="block mb-2 font-semibold"
+              >Activity Name</label
             >
-              Start Timer
-            </button>
-          </form>
-        </div>
+            <input
+              type="text"
+              id="name"
+              v-model="newActivity.name"
+              class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+              required
+            />
+          </div>
+          <div class="mb-4">
+            <label for="description" class="block mb-2 font-semibold"
+              >Description (Optional)</label
+            >
+            <textarea
+              id="description"
+              v-model="newActivity.description"
+              class="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+            ></textarea>
+          </div>
+          <button
+            type="submit"
+            class="w-full px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition duration-300"
+          >
+            Start Timer
+          </button>
+        </form>
       </div>
     </div>
   </div>
@@ -184,3 +191,18 @@ const formatTime = (seconds) => {
   return `${hours}h ${minutes}m ${remainingSeconds}s`;
 };
 </script>
+
+<style scoped>
+/* Additional styling for modern look */
+.card {
+  background-color: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.container {
+  max-width: 800px; /* Optional, adjusts container width */
+  margin-top: 2rem;
+}
+</style>
